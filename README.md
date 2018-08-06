@@ -11,8 +11,14 @@ Try it - [WordBeater Game](https://bradtraversy.github.io/wordbeater)
 ## App Info
 
 ### Author
+David Huang
 
-Brad Traversy
+This repo is forked from original author:
+
+Brad Traversy 
+
+[YouTube](https://www.youtube.com/channel/UC29ju8bIPH5as8OGnQzwJyA)
+
 [Traversy Media](http://www.traversymedia.com)
 
 ### Version
