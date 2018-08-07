@@ -1,0 +1,19 @@
+#current-word {
+    font-size: 0px;
+}
+
+.lg-font {
+    font-size: 5.5rem !important;
+}
+
+.white-char {
+    color: #f8f9fa;
+}
+
+.red-char {
+    color: #dc3545;
+}
+
+.green-char {
+    color: #28a745;
+}

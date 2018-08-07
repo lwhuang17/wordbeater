@@ -17,16 +17,22 @@ let score = 0;
 let isPlaying;
 
 let myCountDown; 
-let previousWord = '';
+let statusChecker;
+
+let currentWord = '';
 
 // DOM Elements
 const wordInput = document.querySelector('#word-input');
-const currentWord = document.querySelector('#current-word');
 const scoreDisplay = document.querySelector('#score');
 const timeDisplay = document.querySelector('#time');
 const message = document.querySelector('#message');
 const seconds = document.querySelector('#seconds');
 const startButton = document.querySelector('#start-game');
+
+// HTML Elements for word colorings
+const greenSubstr = document.getElementById('green-substr');
+const redSubstr = document.getElementById('red-substr');
+const whiteSubstr = document.getElementById('white-substr');
 
 const words = [
   'hat',
@@ -65,10 +71,18 @@ function init() {
 
   // Start game button
   startButton.addEventListener('click', startGame);
-  // Check game status
-  setInterval(checkStatus, 50);
+  showInitialMessage();
 }
 
+function showInitialMessage() {
+    // Initial Prompt when users first see page
+    if(!isPlaying && time === currentLevel) {
+        message.innerHTML = 'Click the button to start game';
+        whiteSubstr.innerHTML = 'Ready ?';
+        greenSubstr.innerHTML = '';
+        redSubstr.innerHTML = '';
+    }
+ }
 
 // Pressing start button
 function startGame() {
@@ -81,6 +95,8 @@ function startGame() {
     message.innerHTML = '';
     time = levels.easy;
     showWord(words);
+    // Check game status
+    statusChecker = setInterval(checkStatus, 50);
     // Call countdown every second
     myCountDown = setInterval(countdown, 1000);
 }
@@ -99,13 +115,23 @@ function inMatch() {
 
 // Match currentWord to wordInput
 function matchWords() {
-  if (wordInput.value === currentWord.innerHTML) {
-    message.innerHTML = 'Correct!!!';
-    return true;
-  } else {
-    message.innerHTML = '';
-    return false;
+
+  let numCorrectChars = 0;
+  let numInCorrectChars = 0;
+  for(let i = 0; i < wordInput.value.length; i++) {
+    if(wordInput.value.charAt(i) === currentWord.charAt(i)) {
+        numCorrectChars++;
+    } else {
+        numInCorrectChars++;
+    }
   }
+
+  // Color comparison for user input and the current word
+  greenSubstr.innerHTML = currentWord.slice(0, numCorrectChars);
+  redSubstr.innerHTML = currentWord.slice(numCorrectChars, numCorrectChars + numInCorrectChars);
+  whiteSubstr.innerHTML = currentWord.slice(numCorrectChars + numInCorrectChars, currentWord.length);
+
+  return wordInput.value === currentWord;
 }
 
 // Pick & show random word
@@ -115,11 +141,13 @@ function showWord(words) {
   let randIndex;
   do {
     randIndex = Math.floor(Math.random() * words.length);
-  } while(words[randIndex] === previousWord)
+  } while(words[randIndex] === currentWord)
 
-  previousWord = words[randIndex];
+  currentWord = words[randIndex];
   // Output random word
-  currentWord.innerHTML = words[randIndex];
+  whiteSubstr.innerHTML = words[randIndex];
+  redSubstr.innerHTML = '';
+  greenSubstr.innerHTML = '';
 }
 
 // Countdown timer
@@ -138,23 +166,22 @@ function countdown() {
 
 // Check game status
 function checkStatus() {
-  // Initial Prompt when users first see page
-  if(!isPlaying && time === currentLevel) {
-    currentWord.innerHTML = 'Ready ?'
-    message.innerHTML = 'Click the button to start game'
-  }
-
   // Game over prompt
   if (!isPlaying && time === 0) {
-    currentWord.innerHTML = 'Game Over!'
+    redSubstr.innerHTML = '';
+    greenSubstr.innerHTML = '';
+    whiteSubstr.innerHTML = 'Game Over!';
     message.innerHTML = 'Start again';
     wordInput.blur();
     wordInput.removeEventListener('input', inMatch);
-    previousWord = '';
+    currentWord = '';
     clearInterval(myCountDown);
+    clearInterval(statusChecker);
 
+    // Reset to initial state 'Ready?'
     setTimeout(function(){ 
         time = currentLevel; 
+        showInitialMessage();
     }, 8000);
   }
 }
