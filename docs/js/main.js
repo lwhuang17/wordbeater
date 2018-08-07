@@ -34,36 +34,18 @@ const greenSubstr = document.getElementById('green-substr');
 const redSubstr = document.getElementById('red-substr');
 const whiteSubstr = document.getElementById('white-substr');
 
-const words = [
-  'hat',
-  'river',
-  'lucky',
-  'statue',
-  'generate',
-  'stubborn',
-  'cocktail',
-  'runaway',
-  'joke',
-  'developer',
-  'establishment',
-  'hero',
-  'javascript',
-  'nutrition',
-  'revolver',
-  'echo',
-  'siblings',
-  'investigate',
-  'horrendous',
-  'symptom',
-  'laughter',
-  'magic',
-  'master',
-  'space',
-  'definition'
-];
+let words;
+let httpRequest = new XMLHttpRequest();
 
 // Initialize Game
 function init() {
+
+  // Grab words from an api call
+  httpRequest.onreadystatechange = processResponse;
+  httpRequest.open('GET', 'http://cors-anywhere.herokuapp.com/https://www.randomlists.com/data/words.json');
+  httpRequest.setRequestHeader('X-Requested-With', '');
+  httpRequest.send();
+
   isPlaying = false;
   // Show number of seconds in UI
   seconds.innerHTML = currentLevel;
@@ -72,6 +54,14 @@ function init() {
   // Start game button
   startButton.addEventListener('click', startGame);
   showInitialMessage();
+}
+
+function processResponse() {
+    if(httpRequest.readyState === XMLHttpRequest.DONE) {
+        if (httpRequest.status === 200) {
+            words = JSON.parse(httpRequest.response)['data'];
+        }
+    }
 }
 
 function showInitialMessage() {
