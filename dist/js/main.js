@@ -10,11 +10,14 @@ const levels = {
 };
 
 // To change level
-const currentLevel = levels.medium;
+const currentLevel = levels.easy;
 
 let time = currentLevel;
 let score = 0;
 let isPlaying;
+
+let myCountDown; 
+let previousWord = '';
 
 // DOM Elements
 const wordInput = document.querySelector('#word-input');
@@ -23,6 +26,7 @@ const scoreDisplay = document.querySelector('#score');
 const timeDisplay = document.querySelector('#time');
 const message = document.querySelector('#message');
 const seconds = document.querySelector('#seconds');
+const startButton = document.querySelector('#start-game');
 
 const words = [
   'hat',
@@ -54,34 +58,43 @@ const words = [
 
 // Initialize Game
 function init() {
+  isPlaying = false;
   // Show number of seconds in UI
   seconds.innerHTML = currentLevel;
-  // Load word from array
-  showWord(words);
-  // Start matching on word input
-  wordInput.addEventListener('input', startMatch);
-  // Call countdown every second
-  setInterval(countdown, 1000);
+  timeDisplay.innerHTML = time;
+
+  // Start game button
+  startButton.addEventListener('click', startGame);
   // Check game status
   setInterval(checkStatus, 50);
 }
 
-// Start match
-function startMatch() {
-  if (matchWords()) {
+
+// Pressing start button
+function startGame() {
     isPlaying = true;
+    wordInput.addEventListener('input', inMatch);
+    wordInput.focus();
+    score = 0;
+    scoreDisplay.innerHTML = score;
+    wordInput.value = '';
+    message.innerHTML = '';
+    time = levels.easy;
+    showWord(words);
+    // Call countdown every second
+    myCountDown = setInterval(countdown, 1000);
+}
+
+// Start match
+function inMatch() {
+  if (matchWords()) {
     time = currentLevel + 1;
     showWord(words);
     wordInput.value = '';
     score++;
   }
 
-  // If score is -1, display 0
-  if (score === -1) {
-    scoreDisplay.innerHTML = 0;
-  } else {
-    scoreDisplay.innerHTML = score;
-  }
+  scoreDisplay.innerHTML = score;
 }
 
 // Match currentWord to wordInput
@@ -98,7 +111,13 @@ function matchWords() {
 // Pick & show random word
 function showWord(words) {
   // Generate random array index
-  const randIndex = Math.floor(Math.random() * words.length);
+  // Avoid repeating words
+  let randIndex;
+  do {
+    randIndex = Math.floor(Math.random() * words.length);
+  } while(words[randIndex] === previousWord)
+
+  previousWord = words[randIndex];
   // Output random word
   currentWord.innerHTML = words[randIndex];
 }
@@ -119,8 +138,23 @@ function countdown() {
 
 // Check game status
 function checkStatus() {
+  // Initial Prompt when users first see page
+  if(!isPlaying && time === currentLevel) {
+    currentWord.innerHTML = 'Ready ?'
+    message.innerHTML = 'Click the button to start game'
+  }
+
+  // Game over prompt
   if (!isPlaying && time === 0) {
-    message.innerHTML = 'Game Over!!!';
-    score = -1;
+    currentWord.innerHTML = 'Game Over!'
+    message.innerHTML = 'Start again';
+    wordInput.blur();
+    wordInput.removeEventListener('input', inMatch);
+    previousWord = '';
+    clearInterval(myCountDown);
+
+    setTimeout(function(){ 
+        time = currentLevel; 
+    }, 8000);
   }
 }
