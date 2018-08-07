@@ -2,11 +2,18 @@
 
 > Simple speed typing app built with JavaScript
 
+
+## Enhancements
+
+Sevearal Enhancements:
+
+1. A start game button
+
+2. No repeating words
+
 ## Use
 
-Run index.html in a browser
-
-Try it - [WordBeater Game](https://bradtraversy.github.io/wordbeater)
+Revised version of word beater.- [WordBeater Game](https://lwhuang17.github.io/wordbeater/)
 
 ## App Info
 
